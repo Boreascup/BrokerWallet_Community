@@ -1,8 +1,10 @@
 package com.brokerwallet.service;
 
+import com.brokerwallet.dto.PostDTO;
 import com.brokerwallet.repository.CommentRepository;
 import com.brokerwallet.dto.CommentDTO;
 import com.brokerwallet.entity.Comment;
+import com.brokerwallet.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,9 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private UserAccountRepository userAccountRepository;
+
     /**
      * 创建评论
      */
@@ -32,13 +37,14 @@ public class CommentService {
 
         Comment saved = commentRepository.save(comment);
 
-        CommentDTO response = new CommentDTO(
-                saved.getId(),
-                saved.getPostId(),
-                saved.getUserId(),
-                saved.getContent(),
-                saved.getCreateTime()
-        );
+        CommentDTO response = new CommentDTO();
+        response.setId(saved.getId());
+        response.setPostId(saved.getPostId());
+        response.setContent(saved.getContent());
+        response.setUserId(saved.getUserId());
+        response.setCreateTime(saved.getCreateTime());
+        userAccountRepository.findById(saved.getUserId())
+                .ifPresent(user -> response.setUserName(user.getUsername()));
 
         return response;
     }
@@ -47,19 +53,22 @@ public class CommentService {
      * 分页获取评论（升序
      */
     public Page<CommentDTO> getCommentsByPostId(Long postId, Pageable pageable) {
+        Page<Comment> commentPage = commentRepository.findByPostIdOrderByCreateTimeAsc(postId, pageable);
 
-        Page<Comment> commentPage =
-                commentRepository.findByPostIdOrderByCreateTimeAsc(postId, pageable);
+        return commentPage.map(comment -> {
 
-        return commentPage.map(comment ->
-                new CommentDTO(
-                        comment.getId(),
-                        comment.getPostId(),
-                        comment.getUserId(),
-                        comment.getContent(),
-                        comment.getCreateTime()
-                )
-        );
+            CommentDTO dto = new CommentDTO();
+
+            dto.setId(comment.getId());
+            dto.setPostId(comment.getPostId());
+            dto.setUserId(comment.getUserId());
+            dto.setContent(comment.getContent());
+            userAccountRepository.findById(comment.getUserId())
+                    .ifPresent(user -> dto.setUserName(user.getUsername()));
+            dto.setCreateTime(comment.getCreateTime());
+
+            return dto;
+        });
     }
 
     /**

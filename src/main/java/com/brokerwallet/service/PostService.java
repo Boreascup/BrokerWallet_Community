@@ -3,6 +3,7 @@ package com.brokerwallet.service;
 import com.brokerwallet.repository.PostRepository;
 import com.brokerwallet.dto.PostDTO;
 import com.brokerwallet.entity.Post;
+import com.brokerwallet.repository.UserAccountRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,9 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private UserAccountRepository userAccountRepository;
+
     /**
      * 根据ID获取帖子
      */
@@ -34,6 +38,8 @@ public class PostService {
         dto.setContent(post.getContent());
         dto.setLikeCount(post.getLikeCount());
         dto.setCreateTime(post.getCreateTime());
+        userAccountRepository.findById(post.getUserId())
+                .ifPresent(user -> dto.setUserName(user.getUsername()));
 
         return dto;
     }
@@ -61,6 +67,9 @@ public class PostService {
         response.setContent(savedPost.getContent());
         response.setLikeCount(savedPost.getLikeCount());
         response.setCreateTime(savedPost.getCreateTime());
+        response.setRewardSum(savedPost.getRewardSum());
+        userAccountRepository.findById(post.getUserId())
+                .ifPresent(user -> response.setUserName(user.getUsername()));
 
         return response;
     }
@@ -83,6 +92,8 @@ public class PostService {
             dto.setContent(post.getContent());
             dto.setLikeCount(post.getLikeCount());
             dto.setCreateTime(post.getCreateTime());
+            userAccountRepository.findById(post.getUserId())
+                    .ifPresent(user -> dto.setUserName(user.getUsername()));
 
             return dto;
 

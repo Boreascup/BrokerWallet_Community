@@ -50,13 +50,6 @@ public class PostController {
     /**
      * 分页获取所有帖子
      */
-    // @GetMapping
-    // public ResponseEntity<List<PostDTO>> getAllPosts() {
-    //
-    //     List<PostDTO> response = postService.getAllPosts();
-    //
-    //     return ResponseEntity.ok(response);
-    // }
     @GetMapping
     public ResponseEntity<Page<PostDTO>> getPosts(
             @RequestParam(defaultValue = "0") int page,

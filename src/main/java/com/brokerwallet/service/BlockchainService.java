@@ -51,23 +51,28 @@ public class BlockchainService {
 
 
     /**
-     * 转账原生代币作为奖励（直接转账，不调用合约）
+     * 转账原生代币作为奖励（直接转账，不调用合约） TODO:记录写数据库
      * @param toAddress 接收地址
      * @param amount 转账金额（单位：wei）//1 Token = 10^18 wei
      * @return 交易哈希
      */
-    public String transferTokenReward(String fromAddress, String toAddress, String amount) throws Exception {
+    public String transferTokenReward(Long postId, String fromAddress, String toAddress, String amount) throws Exception {
         log.info("=== 转账原生代币奖励 ===");
-        log.info("接收地址: {}", toAddress);
-        log.info("转账金额: {} wei", amount);
 
         // 标准化地址格式（确保有0x前缀）
+        if (!fromAddress.startsWith("0x")) {
+            fromAddress = "0x" + fromAddress;
+        }
+        log.info("转账地址: {}", fromAddress);
+
         if (!toAddress.startsWith("0x")) {
             toAddress = "0x" + toAddress;
         }
+        log.info("接收地址: {}", toAddress);
 
         // 将金额字符串转换为BigInteger
         BigInteger amountInWei = new BigInteger(amount);
+        log.info("转账金额: {} wei", amountInWei);
 
         // 获取打赏人账户余额
         BigInteger userBalance = web3j.ethGetBalance(fromAddress, DefaultBlockParameterName.LATEST)

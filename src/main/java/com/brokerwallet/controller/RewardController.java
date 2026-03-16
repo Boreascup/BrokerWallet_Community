@@ -2,8 +2,8 @@ package com.brokerwallet.controller;
 
 import com.brokerwallet.service.BlockchainService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +17,7 @@ import java.util.Map;
 @Slf4j
 public class RewardController {
 
+    @Autowired
     private BlockchainService blockchainService;
 
     /**
@@ -31,12 +32,13 @@ public class RewardController {
         try {
             String fromAddress = request.get("fromAddress").toString();
             String toAddress = request.get("toAddress").toString();
+            Long postId = Long.valueOf(request.get("postId").toString());
             String amount = request.get("amount").toString();
 
-            log.info("🔍 转账奖励: 接收地址={}, 金额={} wei", toAddress, amount);
+            log.info("🔍 转账奖励: 帖子ID={}, 转账地址={}, 接收地址={}, 金额={} wei", postId, fromAddress, toAddress, amount);
 
             // 调用区块链服务转账
-            String txHash = blockchainService.transferTokenReward(fromAddress, toAddress, amount);
+            String txHash = blockchainService.transferTokenReward(postId, fromAddress, toAddress, amount);
 
             log.info("✅ 转账成功: txHash={}", txHash);
 
