@@ -1,0 +1,39 @@
+server:
+  port: 5000
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/brokerwallet_comm
+    username: root
+    password: sirius
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+# BrokerChain 区块链节点配置
+blockchain:
+  # 节点RPC地址 (经常需要修改的端口)
+  rpc-url: "http://127.0.0.1:42035"
+
+  # 智能合约地址
+  contracts:
+    # 代币合约地址 (BrokerChain Token)
+    token-contract: "0xF5c7A871DE8fa7A3393C528d57A519DcEB275f19"
+
+# 连接超时配置 (大幅增加以支持大图片NFT铸造)
+timeout:
+  connect: 60     # 连接超时(秒) - 增加到60秒
+  read: 600       # 读取超时(秒) - 增加到10分钟 (600秒)
+  write: 600      # 写入超时(秒) - 增加到10分钟 (600秒)
+
+# 日志配置
+logging:
+  level:
+    org.web3j: INFO
+    com.brokerwallet.blockchain: DEBUG

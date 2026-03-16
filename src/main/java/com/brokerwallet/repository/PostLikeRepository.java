@@ -1,4 +1,4 @@
-package com.brokerwallet.Repository;
+package com.brokerwallet.repository;
 
 import com.brokerwallet.entity.PostLike;
 import org.springframework.data.jpa.repository.JpaRepository;

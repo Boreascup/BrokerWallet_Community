@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,6 +21,8 @@ public class PostDTO {
     private String content;
 
     private int likeCount;
+
+    private BigDecimal rewardSum;
 
     private LocalDateTime createTime;
 

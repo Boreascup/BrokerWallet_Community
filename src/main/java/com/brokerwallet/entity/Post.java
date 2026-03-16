@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -32,14 +33,11 @@ public class Post {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "display_name")
-    private String displayName;
-
-    @Column(name = "wallet_address", length = 42, nullable = false, unique = true)
-    private String walletAddress;
-
     @Column(name = "like_count")
     private Integer likeCount;
+
+    @Column(name = "reward_sum")
+    private BigDecimal rewardSum;
 
     @Column(name = "create_time")
     private LocalDateTime createTime;

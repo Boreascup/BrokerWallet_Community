@@ -1,6 +1,6 @@
 package com.brokerwallet.service;
 
-import com.brokerwallet.Repository.PostRepository;
+import com.brokerwallet.repository.PostRepository;
 import com.brokerwallet.dto.PostDTO;
 import com.brokerwallet.entity.Post;
 import jakarta.transaction.Transactional;
@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class PostService {
         post.setContent(postDTO.getContent());
         post.setCreateTime(LocalDateTime.now());
         post.setLikeCount(0);
+        post.setRewardSum(BigDecimal.valueOf(0));
 
         Post savedPost = postRepository.save(post);
 
@@ -66,25 +68,6 @@ public class PostService {
     /**
      * 分页获取全部帖子
      */
-    // public List<PostDTO> getAllPosts() {
-    //
-    //     List<Post> posts = postRepository.findAll();
-    //
-    //     return posts.stream().map(post -> {
-    //
-    //         PostDTO dto = new PostDTO();
-    //
-    //         dto.setId(post.getId());
-    //         dto.setUserId(post.getUserId());
-    //         dto.setTitle(post.getTitle());
-    //         dto.setContent(post.getContent());
-    //         dto.setLikeCount(post.getLikeCount());
-    //         dto.setCreateTime(post.getCreateTime());
-    //
-    //         return dto;
-    //
-    //     }).toList();
-    // }
     public Page<PostDTO> getAllPosts(Pageable pageable) {
 
         Page<Post> postPage = postRepository

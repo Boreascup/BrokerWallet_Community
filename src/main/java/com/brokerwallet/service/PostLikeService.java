@@ -1,7 +1,7 @@
 package com.brokerwallet.service;
 
-import com.brokerwallet.Repository.PostLikeRepository;
-import com.brokerwallet.Repository.PostRepository;
+import com.brokerwallet.repository.PostLikeRepository;
+import com.brokerwallet.repository.PostRepository;
 import com.brokerwallet.dto.LikeStatusDTO;
 import com.brokerwallet.entity.Post;
 import com.brokerwallet.entity.PostLike;

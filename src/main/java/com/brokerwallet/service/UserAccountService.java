@@ -1,7 +1,7 @@
 package com.brokerwallet.service;
 
 
-import com.brokerwallet.Repository.UserAccountRepository;
+import com.brokerwallet.repository.UserAccountRepository;
 import com.brokerwallet.entity.UserAccount;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

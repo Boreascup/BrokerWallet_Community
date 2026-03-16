@@ -1,4 +1,4 @@
-package com.brokerwallet.Repository;
+package com.brokerwallet.repository;
 import com.brokerwallet.entity.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -22,15 +22,5 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
      * 判断钱包地址是否已经注册
      */
     boolean existsByWalletAddress(String walletAddress);
-
-    /**
-     * 根据显示名称查找用户（模糊匹配）
-     */
-    List<UserAccount> findByDisplayNameContainingIgnoreCase(String displayName);
-
-    /**
-     * 根据显示名称精确查找用户
-     */
-    Optional<UserAccount> findByDisplayName(String displayName);
 
 }
