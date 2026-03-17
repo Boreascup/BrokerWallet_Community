@@ -4,15 +4,16 @@ package com.brokerwallet.service;
 import com.brokerwallet.repository.UserAccountRepository;
 import com.brokerwallet.entity.UserAccount;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class UserAccountService {
 
-    @Autowired
-    private UserAccountRepository userAccountRepository;
+    private final UserAccountRepository userAccountRepository;
 
     /**
      * 根据钱包地址获取或创建用户

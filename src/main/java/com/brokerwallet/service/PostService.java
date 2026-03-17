@@ -5,6 +5,7 @@ import com.brokerwallet.dto.PostDTO;
 import com.brokerwallet.entity.Post;
 import com.brokerwallet.repository.UserAccountRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,12 +17,11 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PostService {
-    @Autowired
-    private PostRepository postRepository;
 
-    @Autowired
-    private UserAccountRepository userAccountRepository;
+    private final PostRepository postRepository;
+    private final UserAccountRepository userAccountRepository;
 
     /**
      * 根据ID获取帖子

@@ -1,5 +1,7 @@
 server:
   port: 5000
+  error:
+    include-stacktrace: never
 
 spring:
   datasource:
@@ -19,7 +21,7 @@ spring:
 # BrokerChain 区块链节点配置
 blockchain:
   # 节点RPC地址 (经常需要修改的端口)
-  rpc-url: "http://127.0.0.1:20328/"
+  rpc-url: "http://127.0.0.1:59047/"
 
   # 智能合约地址
   contracts:

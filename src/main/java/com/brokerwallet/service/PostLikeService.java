@@ -5,19 +5,18 @@ import com.brokerwallet.repository.PostRepository;
 import com.brokerwallet.dto.LikeStatusDTO;
 import com.brokerwallet.entity.Post;
 import com.brokerwallet.entity.PostLike;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PostLikeService {
 
-    @Autowired
-    private PostLikeRepository postLikeRepository;
-
-    @Autowired
-    private PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final PostRepository postRepository;
 
     /**
      * 点赞

@@ -1,6 +1,8 @@
 package com.brokerwallet.controller;
 
-import com.brokerwallet.service.BlockchainService;
+import com.brokerwallet.common.result.Result;
+import com.brokerwallet.dto.RewardDTO;
+import com.brokerwallet.service.RewardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,41 +21,41 @@ import java.util.Map;
 public class RewardController {
 
     @Autowired
-    private BlockchainService blockchainService;
+    private RewardService rewardService;
 
     /**
-     * 管理员转账代币奖励
+     * 打赏转账(单位：BKC
      */
     @PostMapping("/transfer")
-    public ResponseEntity<Map<String, Object>> transferReward(@RequestBody Map<String, Object> request) {
+    public Result<String> transferReward(
+            @RequestBody RewardDTO request) {
+
         Map<String, Object> response = new HashMap<>();
 
         log.info("📥 收到转账奖励请求: {}", request);
 
-        try {
-            String fromAddress = request.get("fromAddress").toString();
-            String toAddress = request.get("toAddress").toString();
-            Long postId = Long.valueOf(request.get("postId").toString());
-            String amount = request.get("amount").toString();
+        Long postId = request.getPostId();
+        Long fromUserId = request.getFromUserId();
+        Long toUserId = request.getToUserId();
+        String fromAddress = request.getFromAddress();
+        String toAddress = request.getToAddress();
+        BigDecimal amountBkc = request.getAmount();
 
-            log.info("🔍 转账奖励: 帖子ID={}, 转账地址={}, 接收地址={}, 金额={} wei", postId, fromAddress, toAddress, amount);
+        log.info("🔍 转账奖励: 帖子ID={}, 转账地址={}, 接收地址={}, 金额={} BKC",
+                postId, fromAddress, toAddress, amountBkc);
 
-            // 调用区块链服务转账
-            String txHash = blockchainService.transferTokenReward(postId, fromAddress, toAddress, amount);
+        String txHash = rewardService.rewardPost(
+                postId,
+                fromUserId,
+                toUserId,
+                fromAddress,
+                toAddress,
+                amountBkc
+        );
 
-            log.info("✅ 转账成功: txHash={}", txHash);
+        response.put("success", true);
+        response.put("transactionHash", txHash);
 
-            response.put("success", true);
-            response.put("message", "转账成功");
-            response.put("transactionHash", txHash);
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            log.error("❌ 转账失败", e);
-            response.put("success", false);
-            response.put("message", "转账失败: " + e.getMessage());
-            return ResponseEntity.status(500).body(response);
-        }
+        return Result.ok(txHash);
     }
 }

@@ -1,5 +1,6 @@
 package com.brokerwallet.service;
 
+import com.brokerwallet.common.exception.BizException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,6 @@ import java.util.Optional;
 public class BlockchainService {
 
     private final Web3j web3j;
-
 
     /**
      * 等待交易确认
@@ -51,12 +51,13 @@ public class BlockchainService {
 
 
     /**
-     * 转账原生代币作为奖励（直接转账，不调用合约） TODO:记录写数据库
+     * 转账原生代币作为奖励（直接转账，不调用合约）
+     * @param fromAddress 打赏人地址
      * @param toAddress 接收地址
      * @param amount 转账金额（单位：wei）//1 Token = 10^18 wei
      * @return 交易哈希
      */
-    public String transferTokenReward(Long postId, String fromAddress, String toAddress, String amount) throws Exception {
+    public String transferTokenReward(String fromAddress, String toAddress, String amount) throws Exception {
         log.info("=== 转账原生代币奖励 ===");
 
         // 标准化地址格式（确保有0x前缀）
@@ -85,7 +86,7 @@ public class BlockchainService {
         BigInteger totalCost = amountInWei.add(gasPrice.multiply(gasLimit));
 
         if (userBalance.compareTo(totalCost) < 0) {
-            throw new RuntimeException(String.format("账户余额不足: 需要 %s wei（包括gas），但只有 %s wei",
+            throw new BizException(String.format("账户余额不足: 需要 %s wei（包括gas），但只有 %s wei",
                     totalCost, userBalance));
         }
 
