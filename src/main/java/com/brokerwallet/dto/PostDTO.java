@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 public class PostDTO {
 
     private Long id;
+
+    private String avatarUrl;
 
     private Long userId;
 
@@ -22,9 +25,13 @@ public class PostDTO {
 
     private String content;
 
+    private List<String> images;
+
     private int likeCount;
 
-    private BigDecimal rewardSum;
+    private Integer commentCount;
+
+    private BigDecimal rewardAmount;
 
     private LocalDateTime createTime;
 

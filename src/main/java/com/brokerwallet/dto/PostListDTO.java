@@ -9,20 +9,12 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentDTO {
-
-    private Long id;
-
+public class PostListDTO {
     private Long postId;
-
-    private Long userId;
-
-    private String userName;
-
-    private String avatarUrl;
-
+    private String title;
     private String content;
-
+    private String username;
+    private Integer likeCount;
+    private Integer commentCount;
     private LocalDateTime createTime;
-
 }

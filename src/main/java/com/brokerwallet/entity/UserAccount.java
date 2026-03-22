@@ -30,4 +30,7 @@ public class UserAccount {
     @Column(name = "username", length = 100)
     private String username;
 
+    @Column(name = "avatar")
+    private String avatar;
+
 }

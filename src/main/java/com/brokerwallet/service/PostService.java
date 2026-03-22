@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -56,7 +58,7 @@ public class PostService {
         post.setContent(postDTO.getContent());
         post.setCreateTime(LocalDateTime.now());
         post.setLikeCount(0);
-        post.setRewardSum(BigDecimal.valueOf(0));
+        post.setRewardAmount(BigDecimal.valueOf(0));
 
         Post savedPost = postRepository.save(post);
 
@@ -67,7 +69,7 @@ public class PostService {
         response.setContent(savedPost.getContent());
         response.setLikeCount(savedPost.getLikeCount());
         response.setCreateTime(savedPost.getCreateTime());
-        response.setRewardSum(savedPost.getRewardSum());
+        response.setRewardAmount(savedPost.getRewardAmount());
         userAccountRepository.findById(post.getUserId())
                 .ifPresent(user -> response.setUserName(user.getUsername()));
 
@@ -79,24 +81,41 @@ public class PostService {
      */
     public Page<PostDTO> getAllPosts(Pageable pageable) {
 
-        Page<Post> postPage = postRepository
-                .findAllByOrderByCreateTimeDesc(pageable);
+        // 1. 分页查询帖子数据
+        Page<Post> postPage = postRepository.findAllByOrderByCreateTimeDesc(pageable);
 
+        // 2. 转换为 DTO，填充所有字段
         return postPage.map(post -> {
-
             PostDTO dto = new PostDTO();
 
+            // 基础帖子信息
             dto.setId(post.getId());
             dto.setUserId(post.getUserId());
             dto.setTitle(post.getTitle());
             dto.setContent(post.getContent());
-            dto.setLikeCount(post.getLikeCount());
+            dto.setLikeCount(post.getLikeCount() != null ? post.getLikeCount() : 0);
+            dto.setCommentCount(post.getCommentCount());
+            dto.setRewardAmount(post.getRewardAmount());
             dto.setCreateTime(post.getCreateTime());
-            userAccountRepository.findById(post.getUserId())
-                    .ifPresent(user -> dto.setUserName(user.getUsername()));
+
+            // 3. 处理用户信息：用户名 + 头像
+            userAccountRepository.findById(post.getUserId()).ifPresent(user -> {
+                dto.setUserName(user.getUsername());
+                dto.setAvatarUrl(user.getAvatar());
+            });
+
+            // 4. 处理图片：数据库 String 转 List<String>
+            String imagesStr = post.getImages();
+            if (imagesStr != null && !imagesStr.trim().isEmpty()) {
+                // 按逗号分割图片路径，支持多图
+                List<String> imageList = Arrays.asList(imagesStr.split(","));
+                dto.setImages(imageList);
+            } else {
+                // 空值处理，避免 null 异常
+                dto.setImages(Collections.emptyList());
+            }
 
             return dto;
-
         });
     }
 

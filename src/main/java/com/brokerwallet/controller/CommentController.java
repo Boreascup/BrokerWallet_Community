@@ -1,12 +1,12 @@
 package com.brokerwallet.controller;
 
+import com.brokerwallet.common.result.Result;
 import com.brokerwallet.dto.CommentDTO;
 import com.brokerwallet.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,19 +27,19 @@ public class CommentController {
      * 创建评论
      */
     @PostMapping
-    public ResponseEntity<CommentDTO> createComment(
+    public Result<CommentDTO> createComment(
             @RequestBody CommentDTO commentDTO) {
 
         CommentDTO response = commentService.createComment(commentDTO);
 
-        return ResponseEntity.ok(response);
+        return Result.ok(response);
     }
 
     /**
      * 分页获取某个帖子的评论
      */
     @GetMapping("/post/{postId}")
-    public ResponseEntity<Page<CommentDTO>> getCommentsByPostId(
+    public Result<Page<CommentDTO>> getCommentsByPostId(
             @PathVariable Long postId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -49,19 +49,19 @@ public class CommentController {
         Page<CommentDTO> response =
                 commentService.getCommentsByPostId(postId, pageable);
 
-        return ResponseEntity.ok(response);
+        return Result.ok(response);
     }
 
     /**
      * 删除评论
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(
+    public Result<Void> deleteComment(
             @PathVariable Long id) {
 
         commentService.deleteComment(id);
 
-        return ResponseEntity.ok().build();
+        return Result.ok(null, "删除评论成功");
     }
 
 }

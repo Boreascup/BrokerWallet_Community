@@ -1,5 +1,6 @@
 package com.brokerwallet.controller;
 
+import com.brokerwallet.common.result.Result;
 import com.brokerwallet.dto.LikeStatusDTO;
 import com.brokerwallet.service.PostLikeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,42 +23,42 @@ public class PostLikeController {
      * 点赞帖子
      */
     @PostMapping
-    public ResponseEntity<LikeStatusDTO> likePost(
+    public Result<LikeStatusDTO> likePost(
             @RequestParam Long postId,
             @RequestParam Long userId) {
 
         LikeStatusDTO response =
                 postLikeService.likePost(postId, userId);
 
-        return ResponseEntity.ok(response);
+        return Result.ok(response);
     }
 
     /**
      * 取消点赞
      */
     @DeleteMapping
-    public ResponseEntity<LikeStatusDTO> unlikePost(
+    public Result<LikeStatusDTO> unlikePost(
             @RequestParam Long postId,
             @RequestParam Long userId) {
 
         LikeStatusDTO response =
                 postLikeService.unlikePost(postId, userId);
 
-        return ResponseEntity.ok(response);
+        return Result.ok(response);
     }
 
     /**
      * 查询点赞状态
      */
     @GetMapping("/status")
-    public ResponseEntity<LikeStatusDTO> getLikeStatus(
+    public Result<LikeStatusDTO> getLikeStatus(
             @RequestParam Long postId,
             @RequestParam Long userId) {
 
         LikeStatusDTO response =
                 postLikeService.getLikeStatus(postId, userId);
 
-        return ResponseEntity.ok(response);
+        return Result.ok(response);
     }
 
 }

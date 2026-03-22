@@ -5,7 +5,6 @@ import com.brokerwallet.repository.UserAccountRepository;
 import com.brokerwallet.entity.UserAccount;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +23,10 @@ public class UserAccountService {
                 .orElseGet(() -> {
                     UserAccount user = new UserAccount();
                     user.setWalletAddress(walletAddress);
+                    // 默认信息
+                    user.setUsername("用户" + System.currentTimeMillis() % 10000);
+                    user.setAvatar("https://default-avatar.png");
+
                     return userAccountRepository.save(user);
                 });
     }

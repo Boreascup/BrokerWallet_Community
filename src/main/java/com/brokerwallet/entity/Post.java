@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,9 +36,15 @@ public class Post {
     @Column(name = "like_count")
     private Integer likeCount;
 
-    @Column(name = "reward_sum")
-    private BigDecimal rewardSum;
+    @Column(name = "comment_count")
+    private Integer commentCount;
+
+    @Column(name = "reward_amount")
+    private BigDecimal rewardAmount;
 
     @Column(name = "create_time")
     private LocalDateTime createTime;
+
+    @Column(name = "images")
+    private String images;
 }

@@ -1,6 +1,5 @@
 package com.brokerwallet.common.exception;
 
-
 import lombok.Getter;
 
 @Getter

@@ -1,5 +1,6 @@
 package com.brokerwallet.controller;
 
+import com.brokerwallet.common.result.Result;
 import com.brokerwallet.dto.PostDTO;
 import com.brokerwallet.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -29,29 +29,29 @@ public class PostController {
      * 创建帖子
      */
     @PostMapping
-    public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO) {
+    public Result<PostDTO> createPost(@RequestBody PostDTO postDTO) {
 
         PostDTO response = postService.createPost(postDTO);
 
-        return ResponseEntity.ok(response);
+        return Result.ok(response);
     }
 
     /**
      * 获取单个帖子
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PostDTO> getPost(@PathVariable Long id) {
+    public Result<PostDTO> getPost(@PathVariable Long id) {
 
         PostDTO response = postService.getPost(id);
 
-        return ResponseEntity.ok(response);
+        return Result.ok(response);
     }
 
     /**
      * 分页获取所有帖子
      */
     @GetMapping
-    public ResponseEntity<Page<PostDTO>> getPosts(
+    public Result<Page<PostDTO>> getPosts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
@@ -59,18 +59,18 @@ public class PostController {
 
         Page<PostDTO> response = postService.getAllPosts(pageable);
 
-        return ResponseEntity.ok(response);
+        return Result.ok(response);
     }
 
     /**
      * 删除帖子
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+    public Result<Void> deletePost(@PathVariable Long id) {
 
         postService.deletePost(id);
 
-        return ResponseEntity.ok().build();
+        return Result.ok(null, "删除帖子成功");
     }
 
 }
