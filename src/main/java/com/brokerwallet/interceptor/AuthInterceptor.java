@@ -13,14 +13,14 @@ public class AuthInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
 
-        String token = request.getHeader("token");
-
-        // 简单校验（调试阶段）
-        if (token == null || token.isEmpty()) {
-            response.setStatus(401);
-            response.getWriter().write("No token");
-            return false;
-        }
+        // String token = request.getHeader("token");
+        //
+        // // 简单校验（调试阶段）
+        // if (token == null || token.isEmpty()) {
+        //     response.setStatus(401);
+        //     response.getWriter().write("No token");
+        //     return false;
+        // }
 
         return true;
     }

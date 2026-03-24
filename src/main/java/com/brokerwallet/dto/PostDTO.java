@@ -35,4 +35,6 @@ public class PostDTO {
 
     private LocalDateTime createTime;
 
+    private String address;
+
 }

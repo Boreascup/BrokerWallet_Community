@@ -60,11 +60,11 @@ public class RewardTxService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        BigDecimal current = post.getRewardSum() == null
+        BigDecimal current = post.getRewardAmount() == null
                 ? BigDecimal.ZERO
-                : post.getRewardSum();
+                : post.getRewardAmount();
 
-        post.setRewardSum(current.add(amountBkc));
+        post.setRewardAmount(current.add(amountBkc));
         postRepository.save(post);
     }
 

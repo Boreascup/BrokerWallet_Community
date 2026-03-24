@@ -42,6 +42,8 @@ public class PostService {
         dto.setCreateTime(post.getCreateTime());
         userAccountRepository.findById(post.getUserId())
                 .ifPresent(user -> dto.setUserName(user.getUsername()));
+        userAccountRepository.findById(post.getUserId())
+                .ifPresent(user -> dto.setAddress(user.getWalletAddress()));
 
         return dto;
     }

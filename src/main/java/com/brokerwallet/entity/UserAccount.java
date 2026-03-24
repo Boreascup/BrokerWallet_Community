@@ -24,9 +24,6 @@ public class UserAccount {
     @Column(name = "wallet_address", length = 42, nullable = false, unique = true)
     private String walletAddress;
 
-    /**
-     * 用户名
-     */
     @Column(name = "username", length = 100)
     private String username;
 
