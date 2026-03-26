@@ -1,11 +1,14 @@
 package com.brokerwallet.service;
 
 
+import com.brokerwallet.dto.ProfileHeaderDTO;
 import com.brokerwallet.repository.UserAccountRepository;
 import com.brokerwallet.entity.UserAccount;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 @Transactional
@@ -56,5 +59,17 @@ public class UserAccountService {
         return userAccountRepository.save(user);
     }
 
-    //TODO:更新用户个人信息、用户个人主页发帖查询
+
+    public ProfileHeaderDTO getProfileHeader(Long userId) {
+
+        ProfileHeaderDTO dto = userAccountRepository.getProfileHeader(userId);
+        dto.setRewardTotal(
+                dto.getRewardTotal() == null
+                        ? BigDecimal.ZERO
+                        : dto.getRewardTotal().stripTrailingZeros()
+        );
+        return dto;
+    }
+
+    //TODO:更新用户个人信息
 }

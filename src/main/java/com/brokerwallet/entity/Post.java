@@ -39,7 +39,7 @@ public class Post {
     @Column(name = "comment_count")
     private Integer commentCount;
 
-    @Column(name = "reward_amount")
+    @Column(name = "reward_amount", precision = 38, scale = 8)
     private BigDecimal rewardAmount;
 
     @Column(name = "create_time")

@@ -29,7 +29,7 @@ public class Reward {
     @Column(name = "to_user_id")
     private Long toUserId;
 
-    @Column(name = "amount")
+    @Column(name = "amount", precision = 38, scale = 8)
     private BigDecimal amount; // BKC
 
     @Column(name = "tx_hash", unique = true)

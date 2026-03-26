@@ -16,9 +16,9 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
     /**
-     * 根据用户ID查询帖子
+     * 根据用户ID分页查询帖子
      */
-    List<Post> findByUserId(Long userId);
+    Page<Post> findByUserIdOrderByCreateTimeDesc(Long userId, Pageable pageable);
 
     /**
      * 按创建时间倒序查询帖子
@@ -26,7 +26,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByOrderByCreateTimeDesc();
 
     /**
-     * 分页查询帖子
+     * 分页查询全部帖子
      */
     Page<Post> findAllByOrderByCreateTimeDesc(Pageable pageable);
 
@@ -44,4 +44,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("UPDATE Post p SET p.rewardAmount = COALESCE(p.rewardAmount, 0) + :amount WHERE p.id = :postId")
     int addRewardAmount(@Param("postId") Long postId,
                         @Param("amount") BigDecimal amount);
+
+    @Modifying
+    @Query("UPDATE Post p SET p.commentCount = COALESCE(p.commentCount, 0) + 1 WHERE p.id = :postId")
+    int incrementCommentCount(@Param("postId") Long postId);
 }

@@ -1,12 +1,12 @@
 package com.brokerwallet.service;
 
-import com.brokerwallet.repository.PostRepository;
 import com.brokerwallet.dto.PostDTO;
 import com.brokerwallet.entity.Post;
+import com.brokerwallet.entity.UserAccount;
+import com.brokerwallet.repository.PostRepository;
 import com.brokerwallet.repository.UserAccountRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,23 +31,9 @@ public class PostService {
     public PostDTO getPost(Long id) {
 
         Post post = postRepository.findById(id).orElseThrow();
-
-        PostDTO dto = new PostDTO();
-
-        dto.setId(post.getId());
-        dto.setUserId(post.getUserId());
-        dto.setTitle(post.getTitle());
-        dto.setContent(post.getContent());
-        dto.setLikeCount(post.getLikeCount());
-        dto.setCreateTime(post.getCreateTime());
-        dto.setRewardAmount(post.getRewardAmount());
-        dto.setCommentCount(post.getCommentCount());
-        //dto.setImages(post.getImages()); 需要拆字符串成为List
-        //dto.setAvatarUrl(); 需要去账号表里查
+        PostDTO dto = buildBaseDTO(post);
         userAccountRepository.findById(post.getUserId())
-                .ifPresent(user -> dto.setUserName(user.getUsername()));
-        userAccountRepository.findById(post.getUserId())
-                .ifPresent(user -> dto.setAddress(user.getWalletAddress()));
+                .ifPresent(user -> fillUserInfo(dto, user));
 
         return dto;
     }
@@ -64,22 +50,16 @@ public class PostService {
         post.setContent(postDTO.getContent());
         post.setCreateTime(LocalDateTime.now());
         post.setLikeCount(0);
-        post.setRewardAmount(BigDecimal.valueOf(0));
+        post.setRewardAmount(BigDecimal.ZERO);
 
-        Post savedPost = postRepository.save(post);
+        Post saved = postRepository.save(post);
 
-        PostDTO response = new PostDTO();
-        response.setId(savedPost.getId());
-        response.setUserId(savedPost.getUserId());
-        response.setTitle(savedPost.getTitle());
-        response.setContent(savedPost.getContent());
-        response.setLikeCount(savedPost.getLikeCount());
-        response.setCreateTime(savedPost.getCreateTime());
-        response.setRewardAmount(savedPost.getRewardAmount());
-        userAccountRepository.findById(post.getUserId())
-                .ifPresent(user -> response.setUserName(user.getUsername()));
+        PostDTO dto = buildBaseDTO(saved);
 
-        return response;
+        userAccountRepository.findById(saved.getUserId())
+                .ifPresent(user -> dto.setUserName(user.getUsername()));
+
+        return dto;
     }
 
     /**
@@ -87,49 +67,26 @@ public class PostService {
      */
     public Page<PostDTO> getAllPosts(Pageable pageable) {
 
-        // 1. 分页查询帖子数据
         Page<Post> postPage = postRepository.findAllByOrderByCreateTimeDesc(pageable);
 
-        // 2. 转换为 DTO，填充所有字段
         return postPage.map(post -> {
-            PostDTO dto = new PostDTO();
-
-            // 基础帖子信息
-            dto.setId(post.getId());
-            dto.setUserId(post.getUserId());
-            dto.setTitle(post.getTitle());
-            dto.setContent(post.getContent());
-            dto.setLikeCount(post.getLikeCount() != null ? post.getLikeCount() : 0);
-            dto.setCommentCount(post.getCommentCount());
-            dto.setRewardAmount(post.getRewardAmount());
-            dto.setCreateTime(post.getCreateTime());
-
-            // 3. 处理用户信息：用户名 + 头像
-            userAccountRepository.findById(post.getUserId()).ifPresent(user -> {
-                dto.setUserName(user.getUsername());
-                dto.setAvatarUrl(user.getAvatar());
-            });
-
-            // 4. 处理图片：数据库 String 转 List<String>
-            String imagesStr = post.getImages();
-            if (imagesStr != null && !imagesStr.trim().isEmpty()) {
-                // 按逗号分割图片路径，支持多图
-                List<String> imageList = Arrays.asList(imagesStr.split(","));
-                dto.setImages(imageList);
-            } else {
-                // 空值处理，避免 null 异常
-                dto.setImages(Collections.emptyList());
-            }
-
+            PostDTO dto = buildBaseDTO(post);
+            userAccountRepository.findById(post.getUserId())
+                    .ifPresent(user -> fillUserInfo(dto, user));
             return dto;
         });
     }
 
     /**
-     * 获取用户的帖子
+     * 分页获取用户帖子（
      */
-    public List<Post> findByUserId(Long userId) {
-        return postRepository.findByUserId(userId);
+    public Page<PostDTO> getUserPosts(Long userId, Pageable pageable) {
+
+        Page<Post> page = postRepository
+                .findByUserIdOrderByCreateTimeDesc(userId, pageable);
+        UserAccount user = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+        return page.map(post -> convertToDTO(post, user));
     }
 
     /**
@@ -137,5 +94,65 @@ public class PostService {
      */
     public void deletePost(Long id) {
         postRepository.deleteById(id);
+    }
+
+
+    // ================== 通用方法 ==================
+    /**
+     * 构建基础 DTO
+     */
+    private PostDTO buildBaseDTO(Post post) {
+
+        PostDTO dto = new PostDTO();
+
+        dto.setId(post.getId());
+        dto.setUserId(post.getUserId());
+        dto.setTitle(post.getTitle());
+        dto.setContent(post.getContent());
+
+        dto.setLikeCount(post.getLikeCount() != null ? post.getLikeCount() : 0);
+        dto.setCommentCount(post.getCommentCount());
+        dto.setRewardAmount(
+                post.getRewardAmount() == null
+                        ? BigDecimal.ZERO
+                        : post.getRewardAmount().stripTrailingZeros()
+        );
+
+        dto.setCreateTime(post.getCreateTime());
+
+        //图片统一处理
+        List<String> images = parseImages(post.getImages());
+        dto.setImages(images);
+        //dto.setFirstImageUrl(images.isEmpty() ? null : images.get(0));
+
+        return dto;
+    }
+
+    /**
+     * 填充用户信息
+     */
+    private void fillUserInfo(PostDTO dto, UserAccount user) {
+        dto.setUserName(user.getUsername());
+        dto.setAvatarUrl(user.getAvatar());
+        dto.setAddress(user.getWalletAddress());
+    }
+
+    /**
+     * 用户分页专用 DTO 构建（带 user）
+     */
+    private PostDTO convertToDTO(Post post, UserAccount user) {
+        PostDTO dto = buildBaseDTO(post);
+        fillUserInfo(dto, user);
+        return dto;
+    }
+
+    /**
+     * 图片解析
+     */
+    private List<String> parseImages(String images) {
+        if (images == null || images.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(images.split(","));
     }
 }
