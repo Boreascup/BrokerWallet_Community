@@ -40,6 +40,10 @@ public class PostService {
         dto.setContent(post.getContent());
         dto.setLikeCount(post.getLikeCount());
         dto.setCreateTime(post.getCreateTime());
+        dto.setRewardAmount(post.getRewardAmount());
+        dto.setCommentCount(post.getCommentCount());
+        //dto.setImages(post.getImages()); 需要拆字符串成为List
+        //dto.setAvatarUrl(); 需要去账号表里查
         userAccountRepository.findById(post.getUserId())
                 .ifPresent(user -> dto.setUserName(user.getUsername()));
         userAccountRepository.findById(post.getUserId())

@@ -3,7 +3,6 @@ package com.brokerwallet.controller;
 import com.brokerwallet.common.result.Result;
 import com.brokerwallet.dto.RewardVerifyRequest;
 import com.brokerwallet.service.RewardService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +18,6 @@ public class RewardController {
 
     @PostMapping("/verify")
     public Result<Boolean> verify(@RequestBody RewardVerifyRequest req) {
-
         try {
             boolean result = rewardService.verifyAndSave(req);
             return Result.ok(result);
