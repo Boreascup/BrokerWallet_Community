@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -50,14 +51,35 @@ public class PostService {
         post.setContent(postDTO.getContent());
         post.setCreateTime(LocalDateTime.now());
         post.setLikeCount(0);
+        post.setCommentCount(0);
         post.setRewardAmount(BigDecimal.ZERO);
+
+        List<String> imageList = postDTO.getImages();
+        if (imageList != null && !imageList.isEmpty()) {
+            String imagesStr = String.join(",", imageList);
+            post.setImages(imagesStr);
+        } else {
+            post.setImages("");
+        }
 
         Post saved = postRepository.save(post);
 
         PostDTO dto = buildBaseDTO(saved);
 
         userAccountRepository.findById(saved.getUserId())
-                .ifPresent(user -> dto.setUserName(user.getUsername()));
+                .ifPresent(user -> {
+                    dto.setUserName(user.getUsername());
+                    dto.setAddress(user.getWalletAddress());
+                    dto.setAvatarUrl(user.getAvatar());
+                    // 回填DTO的图片字段，把数据库字符串转回List
+                    String savedImages = saved.getImages();
+                    if (savedImages != null && !savedImages.isEmpty()) {
+                        List<String> savedImageList = Arrays.asList(savedImages.split(","));
+                        dto.setImages(savedImageList);
+                    } else {
+                        dto.setImages(new ArrayList<>());
+                    }
+                });
 
         return dto;
     }
