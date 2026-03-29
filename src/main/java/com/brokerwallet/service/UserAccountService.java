@@ -34,14 +34,6 @@ public class UserAccountService {
                 });
     }
 
-    /**
-     * 根据钱包地址查找用户
-     */
-    public UserAccount findByWalletAddress(String walletAddress) {
-        return userAccountRepository
-                .findByWalletAddress(walletAddress)
-                .orElse(null);
-    }
 
     /**
      * 根据ID查找用户

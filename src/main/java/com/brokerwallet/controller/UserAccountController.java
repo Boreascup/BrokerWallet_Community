@@ -3,8 +3,6 @@ package com.brokerwallet.controller;
 import com.brokerwallet.common.result.Result;
 import com.brokerwallet.dto.PostDTO;
 import com.brokerwallet.dto.ProfileHeaderDTO;
-import com.brokerwallet.dto.UserAccountDTO;
-import com.brokerwallet.entity.UserAccount;
 import com.brokerwallet.service.PostService;
 import com.brokerwallet.service.UserAccountService;
 import org.springframework.data.domain.Page;
@@ -12,16 +10,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserAccountController {
 
     private final UserAccountService userAccountService;
@@ -30,24 +25,6 @@ public class UserAccountController {
     public UserAccountController(UserAccountService userAccountService, PostService postService) {
         this.userAccountService = userAccountService;
         this.postService = postService;
-    }
-
-    /**
-     * 钱包登录（自动注册）
-     */
-    @PostMapping("/login")
-    public Result<UserAccountDTO> login(@RequestBody Map<String, String> request) {
-
-        String walletAddress = request.get("walletAddress");
-
-        if (walletAddress == null || walletAddress.isEmpty()) {
-            return Result.fail("walletAddress is empty");
-        }
-
-        UserAccount user = userAccountService.getOrCreateUser(walletAddress);
-        UserAccountDTO dto = convertToDTO(user);
-
-        return Result.ok(dto);
     }
 
     /**
@@ -75,16 +52,5 @@ public class UserAccountController {
         Page<PostDTO> result = postService.getUserPosts(userId, pageable);
 
         return Result.ok(result);
-    }
-
-    // ================= 工具方法 =================
-
-    private UserAccountDTO convertToDTO(UserAccount user) {
-        UserAccountDTO dto = new UserAccountDTO();
-        dto.setUserId(user.getId());
-        dto.setWalletAddress(user.getWalletAddress());
-        dto.setUsername(user.getUsername());
-        dto.setAvatarUrl(user.getAvatar());
-        return dto;
     }
 }

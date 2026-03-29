@@ -129,9 +129,7 @@ public class RewardService {
         return false;
     }
 
-    /**
-     * 转为秒级时间戳
-     */
+    //转为秒级时间戳
     private long convertTimeToTimestamp(String timeStr) {
         try {
             return java.time.ZonedDateTime.parse(timeStr).toInstant().getEpochSecond();

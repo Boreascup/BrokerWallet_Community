@@ -9,5 +9,5 @@ public class UserAccountDTO {
     private String walletAddress;
     private String username;
     private String avatarUrl;
-
+    private String token;
 }

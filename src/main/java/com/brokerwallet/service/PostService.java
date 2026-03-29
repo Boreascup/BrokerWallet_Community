@@ -7,6 +7,7 @@ import com.brokerwallet.repository.PostRepository;
 import com.brokerwallet.repository.UserAccountRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -62,6 +64,7 @@ public class PostService {
             post.setImages("");
         }
 
+        log.info("储存的帖子" + post);
         Post saved = postRepository.save(post);
 
         PostDTO dto = buildBaseDTO(saved);
