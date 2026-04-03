@@ -1,5 +1,6 @@
 package com.brokerwallet.controller;
 
+import com.brokerwallet.common.result.Result;
 import com.brokerwallet.service.CosTempCredentialService;
 import com.tencentcloudapi.sts.v20180813.models.GetFederationTokenResponse;
 import jakarta.annotation.Resource;
@@ -20,7 +21,7 @@ public class CosController {
      * 安卓APP请求临时密钥接口
      */
     @GetMapping("/temp-credential")
-    public Map<String, Object> getTempCredential() {
+    public Result<Map<String, Object> > getTempCredential() {
         GetFederationTokenResponse response = cosTempCredentialService.getTempCredential();
 
         Map<String, Object> result = new HashMap<>();
@@ -31,6 +32,6 @@ public class CosController {
         // 过期时间
         result.put("expiredTime", response.getExpiredTime());
 
-        return result;
+        return Result.ok(result);
     }
 }

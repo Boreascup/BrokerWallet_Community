@@ -18,24 +18,30 @@ spring:
         format_sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
-# BrokerChain 区块链节点配置
-blockchain:
-  # 节点RPC地址 (经常需要修改的端口)
-  rpc-url: "http://127.0.0.1:59047/"
+tencent:
+  cos:
+    # 腾讯云账号
+    secretId: AKID4474rRq49MPJ3gAVgibRNG5nT0Pgu6C6
+    secretKey: lLl270g8wZ0EF7oNm03vb7TedUBh198x
+    # COS 地域
+    region: ap-guangzhou
+    # 存储桶名称
+    bucketName: wallet-community-1416742399
+    # 临时密钥有效期，单位秒，最小900s
+    durationSeconds: 1800
 
-  # 智能合约地址
-  contracts:
-    # 代币合约地址 (BrokerChain Token)
-    token-contract: "0xF5c7A871DE8fa7A3393C528d57A519DcEB275f19"
-
-# 连接超时配置 (大幅增加以支持大图片NFT铸造)
+# 连接超时配置
 timeout:
-  connect: 60     # 连接超时(秒) - 增加到60秒
-  read: 600       # 读取超时(秒) - 增加到10分钟 (600秒)
-  write: 600      # 写入超时(秒) - 增加到10分钟 (600秒)
+  connect: 30     # 连接超时(秒)
+  read: 120       # 读取超时(秒)
+  write: 120      # 写入超时(秒)
 
 # 日志配置
 logging:
   level:
     org.web3j: INFO
     com.brokerwallet.blockchain: DEBUG
+
+jwt:
+  secret: bXktc3VwZXItc2VjcmV0LWtleS0zMmJ5dGVzLWxvbmc=
+  expire: 604800   # 7天（单位：秒）

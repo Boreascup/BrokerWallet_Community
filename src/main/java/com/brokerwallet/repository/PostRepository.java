@@ -30,6 +30,15 @@ public interface PostRepository extends JpaRepository<Post, Long> {
      */
     Page<Post> findAllByOrderByCreateTimeDesc(Pageable pageable);
 
+    // 分页查询帖子列表（n+1优化版
+    @Query("""
+    SELECT p, u 
+    FROM Post p 
+    LEFT JOIN UserAccount u ON p.userId = u.id 
+    ORDER BY p.createTime DESC
+""")
+    Page<Object[]> findPostWithUser(Pageable pageable);
+
 
     @Modifying
     @Query("UPDATE Post p SET p.likeCount = p.likeCount + 1 WHERE p.id = :postId")

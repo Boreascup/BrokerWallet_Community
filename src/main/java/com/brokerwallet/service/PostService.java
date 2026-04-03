@@ -90,14 +90,31 @@ public class PostService {
     /**
      * 分页获取全部帖子
      */
+    // public Page<PostDTO> getAllPosts(Pageable pageable) {
+    //
+    //     Page<Post> postPage = postRepository.findAllByOrderByCreateTimeDesc(pageable);
+    //
+    //     return postPage.map(post -> {
+    //         PostDTO dto = buildBaseDTO(post);
+    //         userAccountRepository.findById(post.getUserId())
+    //                 .ifPresent(user -> fillUserInfo(dto, user));
+    //         return dto;
+    //     });
+    // }
     public Page<PostDTO> getAllPosts(Pageable pageable) {
 
-        Page<Post> postPage = postRepository.findAllByOrderByCreateTimeDesc(pageable);
+        Page<Object[]> page = postRepository.findPostWithUser(pageable);
 
-        return postPage.map(post -> {
+        return page.map(obj -> {
+            Post post = (Post) obj[0];
+            UserAccount user = (UserAccount) obj[1];
+
             PostDTO dto = buildBaseDTO(post);
-            userAccountRepository.findById(post.getUserId())
-                    .ifPresent(user -> fillUserInfo(dto, user));
+
+            if (user != null) {
+                fillUserInfo(dto, user);
+            }
+
             return dto;
         });
     }

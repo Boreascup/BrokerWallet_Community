@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -64,4 +65,26 @@ public class UserAccountService {
     }
 
     //TODO:更新用户个人信息
+    public ProfileHeaderDTO updateProfileHeader(Long userId, String username, String avatar) {
+        Optional<UserAccount> optionalUser = userAccountRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            return null;
+        }
+
+        UserAccount user = optionalUser.get();
+        if (username != null && !username.isEmpty()) {
+            user.setUsername(username);
+        }
+        if (avatar != null && !avatar.isEmpty()) {
+            user.setAvatar(avatar);
+        }
+
+        UserAccount updated = userAccountRepository.save(user);
+
+        ProfileHeaderDTO dto = new ProfileHeaderDTO();
+        dto.setUsername(updated.getUsername());
+        dto.setAvatar(updated.getAvatar());
+
+        return dto;
+    }
 }

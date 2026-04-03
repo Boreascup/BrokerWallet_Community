@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class RewardService {
             return false;
         }
         // 通过打赏地址+受赏地址+时间戳，调用dashboard接口查询是否存在该笔转账
-        boolean txValid = checkTransaction(req.getFrom(), req.getTo(), req.getTimestamp());
+        boolean txValid = checkTransaction(req.getFrom(), req.getTo(), req.getTimestamp(), req.getAmount());
         if (!txValid) {
             return false;
         }
@@ -83,7 +84,7 @@ public class RewardService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     // 调用dashboard接口寻找交易
-    private boolean checkTransaction(String from, String to, Long timeStamp) {
+    private boolean checkTransaction(String from, String to, Long timeStamp, String amount) {
         // 1. 拼接接口地址（acc=from 地址）
         String fromAddress = from.startsWith("0x") ? from.substring(2) : from;
         String toAddress = to.startsWith("0x") ? to.substring(2) : to;
@@ -108,13 +109,21 @@ public class RewardService {
                 String txTo = (String) tx.get("to");
                 String txTime = (String) tx.get("timestamp");
                 long txTimestamp = convertTimeToTimestamp(txTime);
+                String txValue = (String) tx.get("value");
+                BigInteger expectedWei = new BigDecimal(amount)
+                        .multiply(new BigDecimal("1000000000000000000")) // 1e18
+                        .toBigInteger();
+                BigInteger actualWei = new BigInteger(txValue);
+
+                log.info("期望金额(wei): " + expectedWei + " 实际金额(wei): " + actualWei);
                 log.info("接口返回的txFrom:" + txFrom + " txTo:" + txTo + " txTime:" + txTimestamp);
                 log.info("本次打赏的fromAddress：" + fromAddress + " toAddress:" + toAddress + " txTimestamp:" + timeStamp);
 
                 // 5. from、to 完全一致 + 时间戳误差 10 秒内
                 if (fromAddress.equals(txFrom)
                         && toAddress.equals(txTo)
-                        && Math.abs(txTimestamp - timeStamp) <= 10000) { // 10秒容错
+                        && Math.abs(txTimestamp - timeStamp) <= 10000
+                        && expectedWei.equals(actualWei)) {
                     log.info("成功找到交易");
                     return true;
                 }
