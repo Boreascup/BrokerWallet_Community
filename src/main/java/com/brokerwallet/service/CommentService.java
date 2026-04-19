@@ -59,10 +59,12 @@ public class CommentService {
     }
 
     /**
-     * 分页获取评论（升序
+     * 分页获取评论（升序）
      */
     public Page<CommentDTO> getCommentsByPostId(Long postId, Pageable pageable) {
-        Page<Comment> commentPage = commentRepository.findByPostIdOrderByCreateTimeAsc(postId, pageable);
+
+        Page<Comment> commentPage =
+                commentRepository.findByPostIdOrderByCreateTimeAsc(postId, pageable);
 
         return commentPage.map(comment -> {
 
@@ -72,9 +74,13 @@ public class CommentService {
             dto.setPostId(comment.getPostId());
             dto.setUserId(comment.getUserId());
             dto.setContent(comment.getContent());
-            userAccountRepository.findById(comment.getUserId())
-                    .ifPresent(user -> dto.setUserName(user.getUsername()));
             dto.setCreateTime(comment.getCreateTime());
+
+            userAccountRepository.findById(comment.getUserId())
+                    .ifPresent(user -> {
+                        dto.setUserName(user.getUsername());
+                        dto.setAvatarUrl(user.getAvatar());   // 新增头像
+                    });
 
             return dto;
         });
