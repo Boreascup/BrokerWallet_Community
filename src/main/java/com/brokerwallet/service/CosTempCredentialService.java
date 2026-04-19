@@ -37,7 +37,7 @@ public class CosTempCredentialService {
             // 3. 初始化STS客户端
             StsClient client = new StsClient(cred, cosProperties.getRegion(), clientProfile);
 
-            // 4. 构造策略（最关键：控制临时密钥权限）
+            // 4. 构造策略
             String policy = "{"
                     + "\"version\":\"2.0\","
                     + "\"statement\":[{"

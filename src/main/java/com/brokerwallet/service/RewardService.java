@@ -31,7 +31,7 @@ public class RewardService {
 
     private static final String DASHBOARD_URL = "https://dash.broker-chain.com:480/gettx2?acc=";
 
-    // 简化：用内存做 nonce 去重
+    // 目前用内存做 nonce 去重。换成redis
     private final Set<String> usedNonce = ConcurrentHashMap.newKeySet();
 
     public boolean verifyAndSave(RewardVerifyRequest req) {
@@ -67,7 +67,7 @@ public class RewardService {
             log.info("地址解析错误" );
             return false;
         }
-        // 通过打赏地址+受赏地址+时间戳，调用dashboard接口查询是否存在该笔转账
+        // 通过打赏地址+受赏地址+时间戳+金额，调用dashboard接口查询是否存在该笔转账
         boolean txValid = checkTransaction(req.getFrom(), req.getTo(), req.getTimestamp(), req.getAmount());
         if (!txValid) {
             return false;

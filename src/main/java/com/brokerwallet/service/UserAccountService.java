@@ -64,7 +64,7 @@ public class UserAccountService {
         return dto;
     }
 
-    //TODO:更新用户个人信息
+    //更新用户个人信息
     public ProfileHeaderDTO updateProfileHeader(Long userId, String username, String avatar) {
         Optional<UserAccount> optionalUser = userAccountRepository.findById(userId);
         if (optionalUser.isEmpty()) {
